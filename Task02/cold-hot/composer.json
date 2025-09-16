@@ -1,6 +1,6 @@
 {
   "name": "baklaniso/cold-hot",
-  "description": "game",
+  "description": "game cold-hot",
   "type": "project",
   "bin": [
     "bin/cold-hot"
