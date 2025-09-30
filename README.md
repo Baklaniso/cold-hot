@@ -64,7 +64,7 @@
 
 ```bash
 # 1. Клонировать репозиторий
-git clone https://github.com/YourLogin/cold-hot.git
+git clone https://github.com/Baklaniso/cold-hot.git
 cd cold-hot
 
 # 2. Установить зависимости
