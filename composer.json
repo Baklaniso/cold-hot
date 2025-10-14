@@ -1,22 +1,21 @@
 {
-  "name": "slava/cold-hot",
-  "description": "game",
-  "type": "project",
-  "bin": [
-    "bin/cold-hot"
-  ],
-      "autoload": {
-        "psr-4": {
-            "ColdHot\\": "src/"
-    },
-          "files": [
-            "src/Controller.php",
-            "src/View.php",
-            "src/Game.php"
-        ]
-  },
+  "name": "dimakelmyashkin/cold-hot",
   "require": {
-    "php": ">=8.0",
-    "wp-cli/php-cli-tools": "^v0.12.6"
+    "wp-cli/php-cli-tools": "^0.12.5"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ColdHot\\": "src/"
+    }
+  },
+  "bin": [
+    "cold-hot/bin/cold-hot"
+  ],
+  "scripts": {
+    "phpcs": "vendor/bin/phpcs --standard=PSR12 src bin",
+    "phpcs-fix": "vendor/bin/phpcbf --standard=PSR12 src bin"
   }
 }

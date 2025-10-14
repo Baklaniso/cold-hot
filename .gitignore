@@ -1,14 +1,4 @@
-# Composer
 /vendor/
-/composer.lock
-
-# IDE
-/.idea/
-/.vscode/
-
-# SQLite базы
-/*.db
-
-# Системные файлы
+cold-hot.db
 .DS_Store
-Thumbs.db
+*.log
