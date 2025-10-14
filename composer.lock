@@ -4,44 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bf63f4cb3e9dec30f41e75e96daf2af",
+    "content-hash": "169531e739d86157ade629445d2e5277",
     "packages": [
-        {
-            "name": "baklaniso/cold-hot",
-            "version": "v1.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Baklaniso/cold-hot.git",
-                "reference": "2fe2ae917d6c73d65fa364671295889e9dedf0aa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Baklaniso/cold-hot/zipball/2fe2ae917d6c73d65fa364671295889e9dedf0aa",
-                "reference": "2fe2ae917d6c73d65fa364671295889e9dedf0aa",
-                "shasum": ""
-            },
-            "require": {
-                "wp-cli/php-cli-tools": "^0.12.5"
-            },
-            "require-dev": {
-                "squizlabs/php_codesniffer": "^4.0"
-            },
-            "bin": [
-                "bin/cold-hot"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ColdHot\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "support": {
-                "issues": "https://github.com/Baklaniso/cold-hot/issues",
-                "source": "https://github.com/Baklaniso/cold-hot/tree/v1.2.2"
-            },
-            "time": "2025-10-14T18:39:15+00:00"
-        },
         {
             "name": "wp-cli/php-cli-tools",
             "version": "v0.12.6",
