@@ -27,7 +27,7 @@
                 "squizlabs/php_codesniffer": "^4.0"
             },
             "bin": [
-                "cold-hot/bin/cold-hot"
+                "bin/cold-hot"
             ],
             "type": "library",
             "autoload": {
