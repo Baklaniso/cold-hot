@@ -1,5 +1,6 @@
 {
   "name": "slava/cold-hot",
+  "type": "project",
   "require": {
     "wp-cli/php-cli-tools": "^0.12.5"
   },
