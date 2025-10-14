@@ -13,7 +13,7 @@
     }
   },
   "bin": [
-    "bin/cold-hot"
+    "bin/cold-hot.php"
   ],
   "scripts": {
     "phpcs": "vendor/bin/phpcs --standard=PSR12 src bin",
