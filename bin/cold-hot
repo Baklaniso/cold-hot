@@ -9,12 +9,7 @@ if (file_exists($loadPath1)) {
     include_once $loadPath2;
 }
 
-use ColdHot\GameController;
+use ColdHot\ConsoleApplication;
 
-try {
-    $controller = new GameController();
-    $controller->run($argv);
-} catch (Exception $e) {
-    echo "Критическая ошибка: " . $e->getMessage() . "\n";
-    exit(1);
-}
+$app = new ConsoleApplication();
+$app->run($argv);

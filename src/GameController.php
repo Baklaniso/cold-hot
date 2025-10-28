@@ -2,47 +2,64 @@
 
 namespace ColdHot;
 
-use ColdHot\ConsoleApplication;
-use ColdHot\Database;
-use ColdHot\GameModel;
-use ColdHot\GameView;
-
 class GameController
 {
-    public function run(array $argv): void
+    private GameModel $model;
+    private GameView $view;
+    private const MAX_ATTEMPTS = 10;
+
+    public function __construct()
     {
-        $database = new Database(__DIR__ . '"/../bin/cold-hot.db');
-        $model = new GameModel($database);
-        $view = new GameView();
-        $app = new ConsoleApplication($model, $view);
+        $this->model = new GameModel();
+        $this->view = new GameView();
+    }
 
-        $option = $argv[1] ?? '-n';
+    public function startNewGame(): void
+    {
+        $this->view->showWelcome();
+        $playerName = $this->view->askPlayerName();
 
-        switch ($option) {
-            case '--new':
-            case '-n':
-                $app->runNewGame();
-                break;
-            case '--list':
-            case '-l':
-                $app->showGamesList();
-                break;
-            case '--replay':
-            case '-r':
-                $gameId = $argv[2] ?? null;
-                if ($gameId && is_numeric($gameId)) {
-                    $app->replayGame((int)$gameId);
-                } else {
-                    $view->showError("Please specify valid game ID");
-                }
-                break;
-            case '--help':
-            case '-h':
-                $app->showHelp();
-                break;
-            default:
-                $app->runNewGame();
-                break;
+        $this->model->startNewGame($playerName);
+
+        $attempts = 0;
+        $won = false;
+
+        while ($attempts < self::MAX_ATTEMPTS && !$won) {
+            $guess = $this->view->askForGuess();
+            $result = $this->model->makeGuess($guess);
+
+            if (isset($result['error'])) {
+                $this->view->showError($result['error']);
+                continue;
+            }
+
+            $attempts++;
+            $this->view->showHints($result['hints']);
+
+            if ($result['won']) {
+                $won = true;
+                $this->view->showWin($attempts);
+            } elseif ($attempts >= self::MAX_ATTEMPTS) {
+                $this->view->showLoss($this->model->getSecretNumber());
+            }
         }
+    }
+
+    public function listGames(): void
+    {
+        $games = $this->model->getAllGames();
+        $this->view->showGamesList($games);
+    }
+
+    public function replayGame(int $id): void
+    {
+        $gameData = $this->model->loadGame($id);
+
+        if (!$gameData) {
+            $this->view->showGameNotFound();
+            return;
+        }
+
+        $this->view->showReplay($gameData);
     }
 }

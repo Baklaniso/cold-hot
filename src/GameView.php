@@ -2,112 +2,115 @@
 
 namespace ColdHot;
 
+use cli;
+
 class GameView
 {
     public function showWelcome(): void
     {
-        echo "=== Игра 'Холодно-Горячо' ===\n";
-        echo "Угадайте трехзначное число с неповторяющимися цифрами!\n\n";
+        cli\line("========================================");
+        cli\line("       Welcome to Cold-Hot Game!        ");
+        cli\line("========================================");
+        cli\line("Try to guess a 3-digit number with unique digits.");
+        cli\line("Hints: Холодно - digit not in number");
+        cli\line("       Тепло - digit in wrong position");
+        cli\line("       Горячо - digit in correct position");
+        cli\line("");
     }
 
-    public function getPlayerName(): string
+    public function askPlayerName(): string
     {
-        echo "Введите ваше имя: ";
-        return trim(fgets(STDIN));
+        return cli\prompt("Enter your name");
     }
 
-    public function showGameStarted(): void
+    public function askForGuess(): string
     {
-        echo "Игра началась! Загадано трехзначное число.\n";
-        echo "Введите 'quit' для выхода из игры.\n\n";
-    }
-
-    public function getPlayerGuess(int $attempt, int $maxAttempts): string
-    {
-        echo "Попытка {$attempt}/{$maxAttempts}. Введите вашу догадку: ";
-        return trim(fgets(STDIN));
+        return cli\prompt("Enter your 3-digit guess");
     }
 
     public function showHints(array $hints): void
     {
-        echo "Подсказки: " . implode(' ', $hints) . "\n\n";
+        cli\line("Hints: " . implode(' ', $hints));
     }
 
-    public function showInvalidInput(): void
+    public function showError(string $error): void
     {
-        echo "Ошибка! Введите трехзначное число с неповторяющимися цифрами.\n\n";
+        cli\err($error);
     }
 
-    public function showWinMessage(int $attempts): void
+    public function showWin(int $attempts): void
     {
-        echo "Поздравляем! Вы угадали число за {$attempts} попыток!\n";
+        cli\line("");
+        cli\line("🎉 Congratulations! You won in $attempts attempts!");
     }
 
-    public function showLoseMessage(string $secretNumber): void
+    public function showLoss(string $secretNumber): void
     {
-        echo "К сожалению, вы не угадали число. Загаданное число: {$secretNumber}\n";
-    }
-
-    public function showGameQuit(): void
-    {
-        echo "Игра прервана.\n";
+        cli\line("");
+        cli\line("Game over! The secret number was: $secretNumber");
     }
 
     public function showGamesList(array $games): void
     {
         if (empty($games)) {
-            echo "Нет сохраненных игр.\n";
+            cli\line("No games found.");
             return;
         }
 
-        echo "=== Список всех игр ===\n";
+        cli\line("========================================");
+        cli\line("           Saved Games List             ");
+        cli\line("========================================");
+
+        $headers = ['ID', 'Date', 'Player', 'Number', 'Outcome', 'Attempts'];
+        $rows = [];
+
         foreach ($games as $game) {
-            $status = $game['is_won'] ? 'Победа' : 'Поражение';
-            echo "ID: {$game['id']} | Игрок: {$game['player_name']} | ";
-            echo "Число: {$game['secret_number']} | Результат: {$status} | ";
-            echo "Дата: {$game['created_at']}\n";
+            $rows[] = [
+                $game['id'],
+                $game['date'],
+                $game['player_name'],
+                $game['secret_number'],
+                $game['outcome'],
+                count($game['attempts'])
+            ];
+        }
+
+        $table = new \cli\Table();
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->display();
+    }
+
+    public function showReplay(array $gameData): void
+    {
+        cli\line("========================================");
+        cli\line("           Game Replay                  ");
+        cli\line("========================================");
+        cli\line("Date: " . $gameData['date']);
+        cli\line("Player: " . $gameData['player_name']);
+        cli\line("Secret number: " . $gameData['secret_number']);
+        cli\line("Outcome: " . $gameData['outcome']);
+        cli\line("");
+        cli\line("Attempts:");
+
+        foreach ($gameData['attempts'] as $attempt) {
+            cli\line(sprintf(
+                "  %d. Guess: %s | Result: %s",
+                $attempt['number'],
+                $attempt['guess'],
+                $attempt['result']
+            ));
         }
     }
 
-    public function showReplay(array $gameData, array $attempts): void
+    public function askToContinue(): bool
     {
-        echo "=== Повтор игры #{$gameData['id']} ===\n";
-        echo "Игрок: {$gameData['player_name']}\n";
-        echo "Загаданное число: {$gameData['secret_number']}\n";
-        echo "Результат: " . ($gameData['is_won'] ? 'Победа' : 'Поражение') . "\n";
-        echo "Дата: {$gameData['created_at']}\n\n";
-
-        if (empty($attempts)) {
-            echo "Нет попыток для этой игры.\n";
-            return;
-        }
-
-        echo "Ход игры:\n";
-        foreach ($attempts as $attempt) {
-            echo "Попытка {$attempt['attempt_number']}: ";
-            echo "Число: {$attempt['guess']} | ";
-            echo "Подсказки: " . implode(' ', $attempt['hints']) . "\n";
-        }
+        $answer = cli\prompt("Do you want to continue? (yes/no)", 'yes');
+        return strtolower($answer) === 'yes' || strtolower($answer) === 'y';
     }
 
     public function showGameNotFound(): void
     {
-        echo "Ошибка: игра с указанным ID не найдена.\n";
-    }
-
-    public function showError(string $message): void
-    {
-        echo "Ошибка: {$message}\n";
-    }
-
-    public function showHelp(): void
-    {
-        echo "\nПравила игры:\n";
-        echo "Угадайте случайное трехзначное число без повторяющихся цифр.\n";
-        echo "Подсказки:\n";
-        echo " - Горячо: цифра и её позиция совпадают\n";
-        echo " - Тепло: цифра есть, но в другой позиции\n";
-        echo " - Холодно: цифры нет\n";
-        echo "Пример: секрет 456, ваш ввод 546 -> 'Горячо Тепло Тепло'\n";
+        cli\err("Game not found!");
     }
 }

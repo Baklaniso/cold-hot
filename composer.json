@@ -1,8 +1,8 @@
 {
   "name": "baklaniso/cold-hot",
-  "type": "project",
   "require": {
-    "wp-cli/php-cli-tools": "^0.12.5"
+    "wp-cli/php-cli-tools": "^0.12.5",
+    "gabordemooij/redbean": "^5.7"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^4.0"
@@ -13,7 +13,7 @@
     }
   },
   "bin": [
-    "bin/cold-hot.php"
+    "bin/cold-hot"
   ],
   "scripts": {
     "phpcs": "vendor/bin/phpcs --standard=PSR12 src bin",

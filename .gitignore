@@ -1,4 +1,7 @@
+**/vendor/
+**.vscode/
+
 /vendor/
-cold-hot.db
+composer.lock
 .DS_Store
 *.log

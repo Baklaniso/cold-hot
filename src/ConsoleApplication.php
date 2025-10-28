@@ -2,86 +2,79 @@
 
 namespace ColdHot;
 
-use ColdHot\GameModel;
-use ColdHot\GameView;
+use cli;
 
 class ConsoleApplication
 {
-    private $model;
-    private $view;
+    private GameController $controller;
 
-    public function __construct(GameModel $model, GameView $view)
+    public function __construct()
     {
-        $this->model = $model;
-        $this->view = $view;
+        $this->controller = new GameController();
     }
 
-    public function runNewGame(): void
+    public function run(array $argv): void
     {
-        $this->view->showWelcome();
+        $options = $this->parseArguments($argv);
 
-        $playerName = $this->view->getPlayerName();
-        $secretNumber = $this->model->generateSecretNumber();
-        $gameId = $this->model->startNewGame($playerName, $secretNumber);
+        switch ($options['mode']) {
+            case 'new':
+                $this->controller->startNewGame();
+                break;
+            case 'list':
+                $this->controller->listGames();
+                break;
+            case 'replay':
+                $this->controller->replayGame($options['id']);
+                break;
+            case 'help':
+                $this->showHelp();
+                break;
+            default:
+                $this->controller->startNewGame();
+        }
+    }
 
-        $this->view->showGameStarted();
+    private function parseArguments(array $argv): array
+    {
+        $mode = 'new';
+        $id = null;
 
-        $attempts = 0;
-        $maxAttempts = 10;
-
-        while ($attempts < $maxAttempts) {
-            $attempts++;
-            $guess = $this->view->getPlayerGuess($attempts, $maxAttempts);
-
-            if ($guess === 'quit') {
-                $this->model->finishGame($gameId, false);
-                $this->view->showGameQuit();
-                return;
-            }
-
-            if (!preg_match('/^\d{3}$/', $guess) || count(array_unique(str_split($guess))) !== 3) {
-                $this->view->showInvalidInput();
-                $attempts--;
-                continue;
-            }
-
-            $result = $this->model->checkGuess($secretNumber, $guess);
-            $this->model->saveAttempt($gameId, $attempts, $guess, $result['hints']);
-
-            $this->view->showHints($result['hints']);
-
-            if ($result['is_correct']) {
-                $this->model->finishGame($gameId, true);
-                $this->view->showWinMessage($attempts);
-                return;
+        for ($i = 1; $i < count($argv); $i++) {
+            switch ($argv[$i]) {
+                case '--new':
+                case '-n':
+                    $mode = 'new';
+                    break;
+                case '--list':
+                case '-l':
+                    $mode = 'list';
+                    break;
+                case '--replay':
+                case '-r':
+                    $mode = 'replay';
+                    if (isset($argv[$i + 1])) {
+                        $id = (int)$argv[++$i];
+                    }
+                    break;
+                case '--help':
+                case '-h':
+                    $mode = 'help';
+                    break;
             }
         }
 
-        $this->model->finishGame($gameId, false);
-        $this->view->showLoseMessage($secretNumber);
+        return ['mode' => $mode, 'id' => $id];
     }
 
-    public function showGamesList(): void
+    private function showHelp(): void
     {
-        $games = $this->model->getAllGames();
-        $this->view->showGamesList($games);
-    }
-
-    public function replayGame(int $gameId): void
-    {
-        $gameData = $this->model->getGameById($gameId);
-
-        if (!$gameData) {
-            $this->view->showGameNotFound();
-            return;
-        }
-
-        $attempts = $this->model->getGameAttempts($gameId);
-        $this->view->showReplay($gameData, $attempts);
-    }
-
-    public function showHelp(): void
-    {
-        $this->view->showHelp();
+        cli\line("Cold-Hot Game v1.0");
+        cli\line("==================");
+        cli\line("Usage:");
+        cli\line("  --new, -n        Start a new game (default)");
+        cli\line("  --list, -l       Show all saved games");
+        cli\line("  --replay, -r ID  Replay game with specified ID");
+        cli\line("  --help, -h       Show this help message");
     }
 }
