@@ -69,12 +69,12 @@ class ConsoleApplication
 
     private function showHelp(): void
     {
-        cli\line("Cold-Hot Game v1.0");
+        cli\line("Cold-Hot v2.0");
         cli\line("==================");
         cli\line("Usage:");
-        cli\line("  --new, -n        Start a new game (default)");
-        cli\line("  --list, -l       Show all saved games");
-        cli\line("  --replay, -r ID  Replay game with specified ID");
-        cli\line("  --help, -h       Show this help message");
+        cli\line("  --new, -n        Начать новую игру");
+        cli\line("  --list, -l       Показать сохраненные игры");
+        cli\line("  --replay, -r ID  Переиграть игру по ID");
+        cli\line("  --help, -h       Показать инструкции");
     }
 }
